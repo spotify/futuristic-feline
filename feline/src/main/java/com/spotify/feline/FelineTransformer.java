@@ -1,0 +1,88 @@
+/*
+ * Copyright (c) 2021 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.spotify.feline;
+
+import static net.bytebuddy.matcher.ElementMatchers.named;
+
+import java.util.concurrent.Future;
+import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.asm.Advice;
+import net.bytebuddy.description.NamedElement;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.utility.JavaModule;
+
+class FelineTransformer implements AgentBuilder.Transformer {
+
+  private final ElementMatcher.Junction<NamedElement> matcher;
+
+  public static FelineTransformer forCompletableFuture() {
+    return new FelineTransformer(named("get").or(named("join")));
+  }
+
+  public static AgentBuilder.Transformer forFuture() {
+    return new FelineTransformer(named("get"));
+  }
+
+  private FelineTransformer(final ElementMatcher.Junction<NamedElement> matcher) {
+    this.matcher = matcher;
+  }
+
+  @Override
+  public DynamicType.Builder<?> transform(
+      final DynamicType.Builder<?> builder,
+      final TypeDescription typeDescription,
+      final ClassLoader classLoader,
+      final JavaModule module) {
+
+    return builder.visit(Advice.to(FutureCallAdvice.class).on(matcher));
+  }
+
+  static class FutureCallAdvice {
+
+    @Advice.OnMethodEnter
+    static boolean onEnter(
+        @Advice.This() final Object thisObject,
+        @Advice.Origin("#t") final String typeName,
+        @Advice.Origin("#m") final String methodName,
+        @Advice.Origin("#s") final String methodSig) {
+      final Future<?> future = (Future<?>) thisObject;
+
+      boolean state = FelineRuntime.STATE.get();
+
+      if (!future.isDone() && !state) {
+        FelineRuntime.accept(typeName + "." + methodName + methodSig);
+
+        // Set state to true as to ignore any nested blocked calls, e.g. where one Future delegates
+        // to another.
+        // The state must be set after consumers are invoked above. Consumers can throw exceptions,
+        // in which case we
+        // must not have modified the state first as it would not be reset in onExit().
+        FelineRuntime.STATE.set(true);
+      }
+
+      return state;
+    }
+
+    @Advice.OnMethodExit(onThrowable = Throwable.class)
+    static void onExit(@Advice.Enter boolean previousState) {
+      // reset state
+      FelineRuntime.STATE.set(previousState);
+    }
+  }
+}
