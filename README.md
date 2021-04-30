@@ -60,6 +60,9 @@ Feline.addConsumerLast(new MetricsConsumer(registry));
 This will create a meter tagged with `what: blocking-calls` and `call`
 referring to the class and method name that called the blocking
 `Future` or `CompletableFuture` method.
+There is also a tag with `thread_name` referring to the thread that called
+the blocking method. To prevent a metrics cardinality explosion, this
+name is sanitized by replacing all integers with the character `N`. 
 
 You can customize how the caller is identified by
 injecting a custom `CallFinder` to the `MetricsConsumer` - take a look at the

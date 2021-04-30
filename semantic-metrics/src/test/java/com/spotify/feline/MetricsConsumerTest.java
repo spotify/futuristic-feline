@@ -19,6 +19,7 @@ package com.spotify.feline;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.util.concurrent.SettableFuture;
@@ -130,8 +131,9 @@ public class MetricsConsumerTest {
   }
 
   private void assertMetric(final String call) {
+    final String expectedThreadName = MetricsConsumer.sanitizeThreadName(Thread.currentThread().getName());
     final MetricId expectedId =
-        BLOCKING_CALL_ID.tagged("call", call, "thread_name", Thread.currentThread().getName());
+        BLOCKING_CALL_ID.tagged("call", call, "thread_name", expectedThreadName);
     assertTrue(
         "Did not find meter with id="
             + expectedId
@@ -190,5 +192,11 @@ public class MetricsConsumerTest {
         finder.findCall(elements, "java.util.concurrent.Future.get");
     assertTrue(stackTraceElement.isPresent());
     assertThat(stackTraceElement.get(), is(sameInstance(elements[2])));
+  }
+
+  @Test
+  public void testSanitizeThread() {
+    assertEquals("thread-N-N", MetricsConsumer.sanitizeThreadName("thread-2-10"));
+    assertEquals("thread-N-N-pool", MetricsConsumer.sanitizeThreadName("thread-256-123-pool"));
   }
 }

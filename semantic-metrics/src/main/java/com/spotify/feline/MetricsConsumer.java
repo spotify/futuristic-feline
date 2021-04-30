@@ -22,10 +22,12 @@ import com.spotify.metrics.core.SemanticMetricBuilder;
 import com.spotify.metrics.core.SemanticMetricRegistry;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 /** Feline consumer that integrates with semantic-metrics. */
 public class MetricsConsumer implements Consumer<String> {
 
+  private static final Pattern THREAD_NAME_SANITIZE_PATTERN = Pattern.compile("\\d+");
   private final SemanticMetricRegistry registry;
   private final MetricId blockingCallId = MetricId.EMPTY.tagged("what", "blocking-calls");
   private final CallFinder callFinder;
@@ -75,11 +77,16 @@ public class MetricsConsumer implements Consumer<String> {
     // NOTE: if metric reporting is ever moved to a separate thread from the one that is calling the
     // blocking Future method, this will have to change - to pass the threadName as a parameter to
     // Consumers in general. getBlockingMethod() above will also have to change.
-    final String threadName = Thread.currentThread().getName();
+    final String threadName = sanitizeThreadName(Thread.currentThread().getName());
 
     final MetricId metricId = blockingCallId.tagged("call", call, "thread_name", threadName);
     final Meter meter = registry.getOrAdd(metricId, SemanticMetricBuilder.METERS);
     meter.mark();
+  }
+
+  // Visible for testing
+  static String sanitizeThreadName(final String name) {
+    return THREAD_NAME_SANITIZE_PATTERN.matcher(name).replaceAll("N");
   }
 
   /**
