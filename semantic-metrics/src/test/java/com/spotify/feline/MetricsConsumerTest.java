@@ -131,7 +131,8 @@ public class MetricsConsumerTest {
   }
 
   private void assertMetric(final String call) {
-    final String expectedThreadName = MetricsConsumer.sanitizeThreadName(Thread.currentThread().getName());
+    final String expectedThreadName =
+        MetricsConsumer.sanitizeThreadName(Thread.currentThread().getName());
     final MetricId expectedId =
         BLOCKING_CALL_ID.tagged("call", call, "thread_name", expectedThreadName);
     assertTrue(
