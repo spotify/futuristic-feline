@@ -29,6 +29,12 @@
     <url>http://www.spotify.com</url>
   </organization>
 
+  <scm>
+    <connection>scm:git:https://github.com/spotify/futuristic-feline.git</connection>
+    <developerConnection>scm:git:git@github.com:spotify/futuristic-feline.git</developerConnection>
+    <url>scm:https://github.com/spotify/futuristic-feline/</url>
+  </scm>
+
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
