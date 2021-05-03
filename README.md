@@ -32,6 +32,14 @@ To get started, add a dependency on:
     </dependency>
 ```
 
+## Build status
+
+![Build status](https://github.com/spotify/futuristic-feline/actions/workflows/maven.yml/badge.svg)
+
+## Maven central
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.spotify/futuristic-feline/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.spotify/futuristic-feline)
+
 ## Metrics integration
 
 It is often useful to create a metric for the rate of blocking calls. At Spotify we have built this into our service framework using [semantic-metrics](https://github.com/spotify/semantic-metrics).
