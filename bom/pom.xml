@@ -4,21 +4,14 @@
 
   <name>futuristic-feline Bill Of Material</name>
 
-  <groupId>com.spotify</groupId>
   <artifactId>futuristic-feline-bom</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
+  <parent>
+    <groupId>com.spotify</groupId>
+    <artifactId>futuristic-feline-parent</artifactId>
+    <version>1.0.2-SNAPSHOT</version>
+  </parent>
 
   <dependencyManagement>
     <dependencies>
