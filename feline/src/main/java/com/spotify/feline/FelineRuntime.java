@@ -17,33 +17,59 @@
 package com.spotify.feline;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 public class FelineRuntime {
   public static final ThreadLocal<Boolean> STATE = ThreadLocal.withInitial(() -> false);
 
-  private static final List<Consumer<String>> blockingCallConsumers = new CopyOnWriteArrayList<>();
+  private static final List<Consumer<String>> onEnterConsumers = new CopyOnWriteArrayList<>();
+
+  private static final List<Consumer<Map<String, Object>>> onExitConsumers =
+      new CopyOnWriteArrayList<>();
+
+  public static void addOnExitConsumerFirst(
+      final Consumer<Map<String, Object>> blockingCallConsumer) {
+    onExitConsumers.add(0, blockingCallConsumer);
+  }
 
   public static void addConsumerFirst(final Consumer<String> blockingCallConsumer) {
-    blockingCallConsumers.add(0, blockingCallConsumer);
+    onEnterConsumers.add(0, blockingCallConsumer);
+  }
+
+  public static void addOnExitConsumerLast(
+      final Consumer<Map<String, Object>> blockingCallConsumer) {
+    onExitConsumers.add(blockingCallConsumer);
   }
 
   public static void addConsumerLast(final Consumer<String> blockingCallConsumer) {
-    blockingCallConsumers.add(blockingCallConsumer);
+    onEnterConsumers.add(blockingCallConsumer);
   }
 
   public static boolean removeConsumer(final Consumer<String> blockingCallConsumer) {
-    return blockingCallConsumers.remove(blockingCallConsumer);
+    return onEnterConsumers.remove(blockingCallConsumer);
+  }
+
+  public static boolean removeOnExitConsumer(
+      final Consumer<Map<String, Object>> blockingCallConsumer) {
+    return onExitConsumers.remove(blockingCallConsumer);
   }
 
   public static void clearConsumers() {
-    blockingCallConsumers.clear();
+    onEnterConsumers.clear();
+    onExitConsumers.clear();
   }
 
   public static void accept(final String blockingCall) {
-    for (final Consumer<String> consumer : blockingCallConsumers) {
+    for (final Consumer<String> consumer : onEnterConsumers) {
       consumer.accept(blockingCall);
+    }
+  }
+
+  public static void acceptOnExit(final Map<String, Object> data) {
+    for (final Consumer<Map<String, Object>> consumer : onExitConsumers) {
+      consumer.accept(data);
     }
   }
 }

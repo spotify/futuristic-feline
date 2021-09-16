@@ -36,7 +36,10 @@ public class MetricsConsumer implements Consumer<String> {
    * Create a MetricsConsumer with the default Predicate. The default Predicate will tag the metric
    * with first method name not matching "java." after the blocking call. This will typically give a
    * good indication of what code is triggering the blocking call.
+   *
+   * @deprecated Use {@link FelineMetricsRecorder} instead
    */
+  @Deprecated
   public MetricsConsumer(final SemanticMetricRegistry registry) {
     this(registry, new DefaultCallFinder());
   }
@@ -47,7 +50,10 @@ public class MetricsConsumer implements Consumer<String> {
    * useful to identify the caller of the blocking call.
    *
    * <p>The custom Predicate will be invoked on stack trace elements before the blocking call.
+   *
+   * @deprecated Use {@link FelineMetricsRecorder} instead
    */
+  @Deprecated
   public MetricsConsumer(final SemanticMetricRegistry registry, final CallFinder callFinder) {
     this.registry = registry;
     this.callFinder = callFinder;

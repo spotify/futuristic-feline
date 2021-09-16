@@ -18,6 +18,9 @@ package com.spotify.feline;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
@@ -56,7 +59,7 @@ class FelineTransformer implements AgentBuilder.Transformer {
   static class FutureCallAdvice {
 
     @Advice.OnMethodEnter
-    static boolean onEnter(
+    static Map<String, Object> onEnter(
         @Advice.This() final Object thisObject,
         @Advice.Origin("#t") final String typeName,
         @Advice.Origin("#m") final String methodName,
@@ -65,24 +68,47 @@ class FelineTransformer implements AgentBuilder.Transformer {
 
       boolean state = FelineRuntime.STATE.get();
 
-      if (!future.isDone() && !state) {
-        FelineRuntime.accept(typeName + "." + methodName + methodSig);
-
-        // Set state to true as to ignore any nested blocked calls, e.g. where one Future delegates
-        // to another.
-        // The state must be set after consumers are invoked above. Consumers can throw exceptions,
-        // in which case we
-        // must not have modified the state first as it would not be reset in onExit().
-        FelineRuntime.STATE.set(true);
+      if (state) {
+        // Already inside a blocking operation, fast-exit
+        // and keep state as true (i.e. do nothing)
+        return Collections.emptyMap();
       }
 
-      return state;
+      if (future.isDone()) {
+        // This method call is not actually blocking, so fast-exit
+        // and keep state as false (i.e. do nothing)
+        return Collections.emptyMap();
+      }
+
+      final String methodCall = typeName + "." + methodName + methodSig;
+      FelineRuntime.accept(methodCall);
+
+      // Set state to true as to ignore any nested blocked calls, e.g. where one Future delegates
+      // to another.
+      // The state must be set after consumers are invoked above. Consumers can throw exceptions,
+      // in which case we
+      // must not have modified the state first as it would not be reset in onExit().
+      FelineRuntime.STATE.set(true);
+
+      // Can't use custom classes here, since they won't be visible to classes in standard library
+      // such as Future.
+      final Map<String, Object> data = new HashMap<>(4);
+      data.put("method", methodCall);
+      data.put("startTimeNanos", System.nanoTime());
+
+      return data;
     }
 
     @Advice.OnMethodExit(onThrowable = Throwable.class)
-    static void onExit(@Advice.Enter boolean previousState) {
-      // reset state
-      FelineRuntime.STATE.set(previousState);
+    static void onExit(@Advice.Enter Map<String, Object> data) {
+      final Object startTimeNanosObj = data.remove("startTimeNanos");
+      if (startTimeNanosObj != null) {
+        FelineRuntime.STATE.set(false);
+        final long startTimeNanos = (Long) startTimeNanosObj;
+        final long endTimeNanos = System.nanoTime();
+        data.put("blockedTimeNanos", endTimeNanos - startTimeNanos);
+        FelineRuntime.acceptOnExit(data);
+      }
     }
   }
 }

@@ -46,10 +46,37 @@ public class Feline {
    *
    * <p>If a consumer throws an exception, subsequent consumers will not be invoked.
    *
-   * @param blockingCallConsumer Consumer to be invoked on any blocking call
+   * @param blockingCallConsumer Consumer to be invoked on any blocking call before it starts to
+   *     block.
    */
   public static void addConsumerFirst(final Consumer<String> blockingCallConsumer) {
     FelineRuntime.addConsumerFirst(blockingCallConsumer);
+  }
+
+  /**
+   * Registers a consumer that will be invoked when blocking calls are detected. Consumers can throw
+   * exceptions and can thus affect the blocking call.
+   *
+   * <p>This adds the consumer to the front of the list of consumers, so it will be invoked before
+   * other consumers (until something else also calls this). Typically you want to use this for
+   * consumers that only want to observe the state and be guaranteed to be called.
+   *
+   * <p>Consumers are called on the blocked thread.
+   *
+   * <p>If a consumer throws an exception, subsequent consumers will not be invoked.
+   *
+   * <p>This is similar to {@link #addConsumerFirst} except the callback is called after the
+   * blocking call completes, and the callback format is different.
+   *
+   * <p>The consumer receives a map with the following fields: "method" (a String representing the
+   * blocking method call), "blockedTimeNanos" (a Long representing how long the method call was
+   * blocked, in nanoseconds)
+   *
+   * @param blockingCallConsumer Consumer to be invoked on any blocking call after it completes.
+   */
+  public static void addOnExitConsumerFirst(
+      final Consumer<Map<String, Object>> blockingCallConsumer) {
+    FelineRuntime.addOnExitConsumerFirst(blockingCallConsumer);
   }
 
   /**
@@ -71,6 +98,32 @@ public class Feline {
   }
 
   /**
+   * Registers a consumer that will be invoked when blocking calls are detected. Consumers can throw
+   * exceptions and can thus affect the blocking call.
+   *
+   * <p>This adds the consumer to the end of the list of consumers, so it will be invoked after
+   * other consumers (until something else also calls this). Typically you want to use this for
+   * consumers that only want to affect the state by throwing an exception.
+   *
+   * <p>Consumers are called on the blocked thread.
+   *
+   * <p>If a consumer throws an exception, subsequent consumers will not be invoked.
+   *
+   * <p>This is similar to {@link #addConsumerFirst} except the callback is called after the
+   * blocking call completes, and the callback format is different.
+   *
+   * <p>The consumer receives a map with the following fields: "method" (a String representing the
+   * blocking method call), "blockedTimeNanos" (a Long representing how long the method call was
+   * blocked, in nanoseconds)
+   *
+   * @param blockingCallConsumer Consumer to be invoked on any blocking call after it completes.
+   */
+  public static void addOnExitConsumerLast(
+      final Consumer<Map<String, Object>> blockingCallConsumer) {
+    FelineRuntime.addOnExitConsumerLast(blockingCallConsumer);
+  }
+
+  /**
    * Removes a consumer from the internal list of consumers.
    *
    * @param blockingCallConsumer Consumer to be invoked on any blocking call
@@ -78,6 +131,17 @@ public class Feline {
    */
   public static boolean removeConsumer(final Consumer<String> blockingCallConsumer) {
     return FelineRuntime.removeConsumer(blockingCallConsumer);
+  }
+
+  /**
+   * Removes a consumer from the internal list of consumers.
+   *
+   * @param blockingCallConsumer Consumer to be invoked on any blocking call
+   * @return true if it was found, false if it was not found.
+   */
+  public static boolean removeOnExitConsumer(
+      final Consumer<Map<String, Object>> blockingCallConsumer) {
+    return FelineRuntime.removeOnExitConsumer(blockingCallConsumer);
   }
 
   /**
