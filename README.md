@@ -58,11 +58,10 @@ Add a dependency on:
     </dependency>
 ```
 
-Then register the `MetricConsumer` with `Feline`:
+Then install the `FelineMetricsRecorder`:
 
 ```java
-SemanticMetricRegistry registry = new SemanticMetricRegistry()
-Feline.addConsumerLast(new MetricsConsumer(registry));
+FelineMetricsRecorder.install(new SemanticMetricRegistry());
 ```
 
 This will create a meter tagged with `what: blocking-calls` and `call`
@@ -72,9 +71,13 @@ There is also a tag with `thread_name` referring to the thread that called
 the blocking method. To prevent a metrics cardinality explosion, this
 name is sanitized by replacing all integers with the character `N`.
 
+Similarly, there's a meter to measure total time blocked:
+`what: blocking-calls-time` measured in nano-seconds (also tagged with `unit: ns`) 
+with the same tags as above (`call` and `thread_name`).
+
 You can customize how the caller is identified by
-injecting a custom `CallFinder` to the `MetricsConsumer` - take a look at the
-code in `com.spotify.feline.MetricsConsumer` for more detail.
+injecting a custom `CallFinder` to the `FelineMetricsRecorder` - take a look at the
+code in `com.spotify.feline.FelineMetricsRecorder` for more detail.
 
 ## JUnit integration
 
