@@ -92,7 +92,8 @@ class FelineTransformer implements AgentBuilder.Transformer {
 
       // Can't use custom classes here, since they won't be visible to classes in standard library
       // such as Future.
-      final Map<String, Object> data = new HashMap<>(4);
+
+      final Map<String, Object> data = new HashMap<>(2);
       data.put("method", methodCall);
       data.put("startTimeNanos", System.nanoTime());
 
