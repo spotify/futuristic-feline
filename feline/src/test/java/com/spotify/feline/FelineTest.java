@@ -101,6 +101,29 @@ public class FelineTest {
   }
 
   @Test
+  public void completableFutureBlockingJoinWithSubclass()
+      throws ExecutionException, InterruptedException {
+    final CompletableFuture<Void> future = CompletableFuture.runAsync(RUNNABLE);
+    final FutureSubclass<Void> subFuture = new FutureSubclass<>();
+    future.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null) {
+            subFuture.completeExceptionally(throwable);
+          } else {
+            subFuture.complete(aVoid);
+          }
+        });
+
+    // blocking
+    subFuture.join();
+
+    // non-blocking
+    subFuture.get();
+
+    assertCalls("java.util.concurrent.CompletableFuture.join()");
+  }
+
+  @Test
   public void completableFutureAllowedBlockingJoin() {
     final CompletableFuture<Void> future = CompletableFuture.runAsync(RUNNABLE);
 
