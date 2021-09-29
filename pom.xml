@@ -2,15 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <groupId>com.spotify</groupId>
   <artifactId>futuristic-feline-parent</artifactId>
   <packaging>pom</packaging>
 
   <version>1.0.6-SNAPSHOT</version>
 
   <parent>
-    <groupId>com.spotify</groupId>
-    <artifactId>foss-root</artifactId>
-    <version>15</version>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>9</version>
   </parent>
 
   <licenses>
@@ -82,9 +83,6 @@
         </executions>
       </plugin>
       <plugin>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-      <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.1.2</version>
         <configuration>
@@ -104,13 +102,11 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>check-file-header</id>
-            <phase>none</phase>
-          </execution>
-        </executions>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <processAllModules>true</processAllModules>
+        </configuration>
       </plugin>
     </plugins>
   </build>
