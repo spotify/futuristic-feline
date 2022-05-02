@@ -29,6 +29,9 @@ public class FelineRuntime {
   private static final List<Consumer<Map<String, Object>>> onExitConsumers =
       new CopyOnWriteArrayList<>();
 
+  private static final List<Runnable> threadLocalInitialValueConsumers =
+      new CopyOnWriteArrayList<>();
+
   public static void addOnExitConsumerFirst(
       final Consumer<Map<String, Object>> blockingCallConsumer) {
     onExitConsumers.add(0, blockingCallConsumer);
@@ -70,6 +73,27 @@ public class FelineRuntime {
   public static void acceptOnExit(final Map<String, Object> data) {
     for (final Consumer<Map<String, Object>> consumer : onExitConsumers) {
       consumer.accept(data);
+    }
+  }
+
+  public static void addThreadLocalInitialValueConsumer(final Runnable consumer) {
+    threadLocalInitialValueConsumers.add(consumer);
+  }
+
+  public static boolean removeThreadLocalInitialValueConsumer(final Runnable consumer) {
+    return threadLocalInitialValueConsumers.remove(consumer);
+  }
+
+  public static void acceptThreadLocalInitialValue() {
+    // Since this method may be invoked frequently, the regular for-each loop is
+    // replaced with a manual loop to reduce object creation
+    final int n = threadLocalInitialValueConsumers.size();
+    for (int i = 0; i < n; i++) {
+      try {
+        threadLocalInitialValueConsumers.get(i).run();
+      } catch (Exception e) {
+        // Ignore
+      }
     }
   }
 }

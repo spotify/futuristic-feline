@@ -31,6 +31,8 @@ public class FelineMetricsRecorder {
       MetricId.EMPTY.tagged("what", "blocking-calls-time", "unit", "ns");
   private final MetricsConsumer.CallFinder callFinder;
 
+  private final Meter initialValueCalls;
+
   /**
    * Create a MetricsConsumer with the default Predicate. The default Predicate will tag the metric
    * with first method name not matching "java." after the blocking call. This will typically give a
@@ -51,6 +53,8 @@ public class FelineMetricsRecorder {
       final SemanticMetricRegistry registry, final MetricsConsumer.CallFinder callFinder) {
     this.registry = registry;
     this.callFinder = callFinder;
+    this.initialValueCalls =
+        registry.meter(MetricId.EMPTY.tagged("what", "thread-local-initial-value"));
   }
 
   private Optional<StackTraceElement> getBlockingMethod(final String blockingCall) {
@@ -88,6 +92,11 @@ public class FelineMetricsRecorder {
                   .orElse("unknown");
           consumer.markMeter(call, blockedTimeNanos);
         });
+    Feline.addThreadLocalInitialValueConsumer(consumer::acceptThreadLocal);
+  }
+
+  private void acceptThreadLocal() {
+    initialValueCalls.mark();
   }
 
   private void markMeter(final String call, final long timeBlockedNanos) {
