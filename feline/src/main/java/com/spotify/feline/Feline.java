@@ -163,6 +163,24 @@ public class Feline {
         });
   }
 
+  /**
+   * The consumer will be called every time a ThreadLocal object triggers initialValue(). This
+   * should be a rare event for well behaving usages of ThreadLocal.
+   *
+   * <p>However, since Java 17+, the combination of ThreadLocal and ForkJoinPool.commonPool() may
+   * lead to overly frequent calls to initialValue() which can be harmful for performance and/or
+   * correctness. This can be used to detect suspicious high rate of calls.
+   *
+   * @param consumer consumer to be invoked on each call to ThreadLocal.initialValue()
+   */
+  public static void addThreadLocalInitialValueConsumer(final Runnable consumer) {
+    FelineRuntime.addThreadLocalInitialValueConsumer(consumer);
+  }
+
+  public static boolean removeThreadLocalInitialValueConsumer(final Runnable consumer) {
+    return FelineRuntime.removeThreadLocalInitialValueConsumer(consumer);
+  }
+
   static {
     final Instrumentation instrumentation = ByteBuddyAgent.install();
 
@@ -197,6 +215,11 @@ public class Feline {
         // Instrument allowed/disallowed methods
         .type(it -> allowances.containsKey(it.getName()))
         .transform(new AllowancesTransformer(allowances))
+        .asTerminalTransformation()
+
+        // instrument ThreadLocal
+        .type(ElementMatchers.isSubTypeOf(ThreadLocal.class))
+        .transform(FelineThreadLocalTransformer.forThreadLocal())
         .asTerminalTransformation()
         .installOn(instrumentation);
   }
