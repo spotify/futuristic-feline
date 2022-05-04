@@ -66,7 +66,7 @@ class FelineTransformer implements AgentBuilder.Transformer {
         @Advice.Origin("#s") final String methodSig) {
       final Future<?> future = (Future<?>) thisObject;
 
-      boolean state = FelineRuntime.STATE.get();
+      boolean state = FelineRuntime.BLOCKED_THREADS.contains(Thread.currentThread().getId());
 
       if (state) {
         // Already inside a blocking operation, fast-exit
@@ -88,7 +88,7 @@ class FelineTransformer implements AgentBuilder.Transformer {
       // The state must be set after consumers are invoked above. Consumers can throw exceptions,
       // in which case we
       // must not have modified the state first as it would not be reset in onExit().
-      FelineRuntime.STATE.set(true);
+      FelineRuntime.BLOCKED_THREADS.add(Thread.currentThread().getId());
 
       // Can't use custom classes here, since they won't be visible to classes in standard library
       // such as Future.
@@ -104,7 +104,7 @@ class FelineTransformer implements AgentBuilder.Transformer {
     static void onExit(@Advice.Enter Map<String, Object> data) {
       final Object startTimeNanosObj = data.remove("startTimeNanos");
       if (startTimeNanosObj != null) {
-        FelineRuntime.STATE.set(false);
+        FelineRuntime.BLOCKED_THREADS.remove(Thread.currentThread().getId());
         final long startTimeNanos = (Long) startTimeNanosObj;
         final long endTimeNanos = System.nanoTime();
         data.put("blockedTimeNanos", endTimeNanos - startTimeNanos);

@@ -54,12 +54,12 @@ class AllowancesTransformer implements AgentBuilder.Transformer {
 
     @Advice.OnMethodEnter
     static void onEnter() {
-      FelineRuntime.STATE.set(true);
+      FelineRuntime.BLOCKED_THREADS.add(Thread.currentThread().getId());
     }
 
     @Advice.OnMethodExit(onThrowable = Throwable.class)
     static void onExit() {
-      FelineRuntime.STATE.set(false);
+      FelineRuntime.BLOCKED_THREADS.remove(Thread.currentThread().getId());
     }
   }
 }

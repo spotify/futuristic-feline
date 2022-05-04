@@ -18,11 +18,13 @@ package com.spotify.feline;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 public class FelineRuntime {
-  public static final ThreadLocal<Boolean> STATE = ThreadLocal.withInitial(() -> false);
+  public static final Set<Long> BLOCKED_THREADS = ConcurrentHashMap.newKeySet();
 
   private static final List<Consumer<String>> onEnterConsumers = new CopyOnWriteArrayList<>();
 
