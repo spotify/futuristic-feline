@@ -192,6 +192,7 @@ public class Feline {
     }
 
     new AgentBuilder.Default()
+        .with(new AgentBuilder.CircularityLock.Global())
         .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
         .with(AgentBuilder.TypeStrategy.Default.DECORATE)
         .with(AgentBuilder.InitializationStrategy.NoOp.INSTANCE)
