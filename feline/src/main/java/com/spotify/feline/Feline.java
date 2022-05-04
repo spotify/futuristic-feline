@@ -192,6 +192,7 @@ public class Feline {
     }
 
     new AgentBuilder.Default()
+        .with(new ThreadLocalCircularityLock())
         .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
         .with(AgentBuilder.TypeStrategy.Default.DECORATE)
         .with(AgentBuilder.InitializationStrategy.NoOp.INSTANCE)
@@ -222,5 +223,24 @@ public class Feline {
         .transform(FelineThreadLocalTransformer.forThreadLocal())
         .asTerminalTransformation()
         .installOn(instrumentation);
+  }
+
+  /**
+   * This is equivalent to AgentBuilder.CircularityLock.Default except it avoids using ThreadLocal.
+   *
+   * <p>We can not use ThreadLocal since we are also instrumenting it.
+   */
+  private static class ThreadLocalCircularityLock implements AgentBuilder.CircularityLock {
+    private final Set<Long> threadLocal = ConcurrentHashMap.newKeySet();
+
+    @Override
+    public boolean acquire() {
+      return threadLocal.add(Thread.currentThread().getId());
+    }
+
+    @Override
+    public void release() {
+      threadLocal.remove(Thread.currentThread().getId());
+    }
   }
 }

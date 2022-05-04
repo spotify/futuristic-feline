@@ -24,6 +24,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 public class FelineRuntime {
+  // This is equivalent to using a ThreadLocal<Boolean>, but since we are instrumenting the
+  // ThreadLocal class we instead use custom set keyed on thread id
   public static final Set<Long> BLOCKED_THREADS = ConcurrentHashMap.newKeySet();
 
   private static final List<Consumer<String>> onEnterConsumers = new CopyOnWriteArrayList<>();
