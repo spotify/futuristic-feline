@@ -18,7 +18,6 @@
 package com.spotify.feline;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -26,13 +25,14 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.utility.JavaModule;
 
 /**
  * This transformer applies {@link AllowAdvice} to every method registered with {@link
  * Feline#allowBlockingCallsInside(String, String)}.
  */
-class AllowancesTransformer implements AgentBuilder.Transformer {
+class AllowancesTransformer implements AgentBuilder.Transformer, ElementMatcher<TypeDescription> {
 
   private final ConcurrentMap<String, Set<String>> allowances;
 
@@ -52,8 +52,9 @@ class AllowancesTransformer implements AgentBuilder.Transformer {
         });
   }
 
-  boolean containsClass(String name) {
-    return allowances.containsKey(name);
+  @Override
+  public boolean matches(final TypeDescription typeDescription) {
+    return allowances.containsKey(typeDescription.getName());
   }
 
   @Override

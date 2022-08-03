@@ -18,7 +18,6 @@ package com.spotify.feline;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -206,7 +205,7 @@ public class Feline {
         .asTerminalTransformation()
 
         // Instrument allowed/disallowed methods
-        .type(it -> allowancesTransformer.containsClass(it.getName()))
+        .type(allowancesTransformer)
         .transform(allowancesTransformer)
         .asTerminalTransformation()
 
