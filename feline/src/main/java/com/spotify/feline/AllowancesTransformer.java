@@ -34,10 +34,18 @@ import net.bytebuddy.utility.JavaModule;
  */
 class AllowancesTransformer implements AgentBuilder.Transformer, ElementMatcher<TypeDescription> {
 
+  private static class SingletonHelper {
+    private static final AllowancesTransformer SINGLETON = new AllowancesTransformer();
+  }
+
   private final ConcurrentMap<String, Set<String>> allowances;
 
   AllowancesTransformer() {
     this.allowances = new ConcurrentHashMap<>();
+  }
+
+  public static AllowancesTransformer getInstance() {
+    return SingletonHelper.SINGLETON;
   }
 
   void allow(final String className, final String methodName) {
