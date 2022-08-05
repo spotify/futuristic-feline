@@ -43,12 +43,12 @@ class AllowancesTransformer implements AgentBuilder.Transformer, ElementMatcher<
   void allow(final String className, final String methodName) {
     allowances.compute(
         className,
-        (key, allowances) -> {
-          if (allowances == null) {
-            allowances = new HashSet<>();
+        (key, set) -> {
+          if (set == null) {
+            set = new HashSet<>();
           }
-          allowances.add(methodName);
-          return allowances;
+          set.add(methodName);
+          return set;
         });
   }
 
