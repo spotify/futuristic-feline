@@ -18,7 +18,6 @@ package com.spotify.feline;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -32,7 +31,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 /** Detects blocking calls to @link CompletableFuture and notifies registered consumers. */
 public class Feline {
 
-  private static final Map<String, Set<String>> allowances = new ConcurrentHashMap<>();
+  private static final AllowancesTransformer allowancesTransformer = new AllowancesTransformer();
 
   /**
    * Registers a consumer that will be invoked when blocking calls are detected. Consumers can throw
@@ -152,15 +151,7 @@ public class Feline {
    * @param methodName a method name
    */
   public static void allowBlockingCallsInside(final String className, final String methodName) {
-    allowances.compute(
-        className,
-        (key, allowances) -> {
-          if (allowances == null) {
-            allowances = new HashSet<>();
-          }
-          allowances.add(methodName);
-          return allowances;
-        });
+    allowancesTransformer.allow(className, methodName);
   }
 
   /**
@@ -214,8 +205,8 @@ public class Feline {
         .asTerminalTransformation()
 
         // Instrument allowed/disallowed methods
-        .type(it -> allowances.containsKey(it.getName()))
-        .transform(new AllowancesTransformer(allowances))
+        .type(allowancesTransformer)
+        .transform(allowancesTransformer)
         .asTerminalTransformation()
 
         // instrument ThreadLocal
