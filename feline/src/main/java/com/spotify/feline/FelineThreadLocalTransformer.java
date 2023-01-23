@@ -18,11 +18,12 @@ package com.spotify.feline;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
+import java.security.ProtectionDomain;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.NamedElement;
 import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.utility.JavaModule;
 
@@ -39,11 +40,12 @@ class FelineThreadLocalTransformer implements AgentBuilder.Transformer {
   }
 
   @Override
-  public DynamicType.Builder<?> transform(
-      final DynamicType.Builder<?> builder,
+  public Builder<?> transform(
+      final Builder<?> builder,
       final TypeDescription typeDescription,
       final ClassLoader classLoader,
-      final JavaModule module) {
+      final JavaModule javaModule,
+      final ProtectionDomain protectionDomain) {
 
     return builder.visit(Advice.to(FutureCallAdvice.class).on(matcher));
   }
