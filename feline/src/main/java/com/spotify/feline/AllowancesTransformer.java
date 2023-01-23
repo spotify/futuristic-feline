@@ -17,6 +17,7 @@
 
 package com.spotify.feline;
 
+import java.security.ProtectionDomain;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.utility.JavaModule;
 
@@ -58,11 +59,12 @@ class AllowancesTransformer implements AgentBuilder.Transformer, ElementMatcher<
   }
 
   @Override
-  public DynamicType.Builder<?> transform(
-      DynamicType.Builder<?> builder,
-      TypeDescription typeDescription,
-      ClassLoader classLoader,
-      JavaModule module) {
+  public Builder<?> transform(
+      final Builder<?> builder,
+      final TypeDescription typeDescription,
+      final ClassLoader classLoader,
+      final JavaModule javaModule,
+      final ProtectionDomain protectionDomain) {
 
     final Set<String> methods = allowances.get(typeDescription.getName());
 

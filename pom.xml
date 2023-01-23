@@ -50,6 +50,7 @@
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
     <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
+    <byte-buddy.version>1.12.22</byte-buddy.version>
   </properties>
 
   <modules>
@@ -130,12 +131,12 @@
       <dependency>
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy</artifactId>
-        <version>1.11.0</version>
+        <version>${byte-buddy.version}</version>
       </dependency>
       <dependency>
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy-agent</artifactId>
-        <version>1.11.0</version>
+        <version>${byte-buddy.version}</version>
       </dependency>
 
       <dependency>
