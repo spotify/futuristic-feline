@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.spotify</groupId>
     <artifactId>futuristic-feline-parent</artifactId>
-    <version>1.1.6</version>
+    <version>1.1.7-SNAPSHOT</version>
   </parent>
 
   <dependencies>
