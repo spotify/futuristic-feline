@@ -1,27 +1,18 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.spotify</groupId>
-  <artifactId>futuristic-feline-parent</artifactId>
-  <packaging>pom</packaging>
-
-  <version>1.1.6-SNAPSHOT</version>
-
   <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>9</version>
+    <groupId>com.spotify</groupId>
+    <artifactId>foss-root</artifactId>
+    <version>16</version>
   </parent>
 
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-      <comments>A business-friendly OSS license</comments>
-    </license>
-  </licenses>
+  <artifactId>futuristic-feline-parent</artifactId>
+  <packaging>pom</packaging>
+  <version>1.1.6-SNAPSHOT</version>
 
   <organization>
     <name>Spotify AB</name>
@@ -35,22 +26,12 @@
     <tag>HEAD</tag>
   </scm>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
-
   <properties>
-    <maven.compiler.source>8</maven.compiler.source>
-    <maven.compiler.target>8</maven.compiler.target>
     <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
+    <!-- dependencies -->
     <byte-buddy.version>1.14.10</byte-buddy.version>
+    <junit.version>5.7.0</junit.version>
+    <semantic-metrics.version>1.2.0</semantic-metrics.version>
   </properties>
 
   <modules>
@@ -65,30 +46,16 @@
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.1.2</version>
       </plugin>
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.1.2</version>
-        <configuration>
-          <failIfNoTests>true</failIfNoTests>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>com.coveo</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
-        <version>2.9.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.6.0</version>
         <configuration>
           <failOnWarning>true</failOnWarning>
           <ignoredUnusedDeclaredDependencies>
@@ -103,25 +70,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>versions-maven-plugin</artifactId>
-        <version>2.5</version>
-        <configuration>
-          <processAllModules>true</processAllModules>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.13</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
-        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -153,12 +101,12 @@
       <dependency>
         <groupId>com.spotify.metrics</groupId>
         <artifactId>semantic-metrics-api</artifactId>
-        <version>1.2.0</version>
+        <version>${semantic-metrics.version}</version>
       </dependency>
       <dependency>
         <groupId>com.spotify.metrics</groupId>
         <artifactId>semantic-metrics-core</artifactId>
-        <version>1.2.0</version>
+        <version>${semantic-metrics.version}</version>
       </dependency>
 
       <dependency>
@@ -170,17 +118,17 @@
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
-        <version>5.7.0</version>
+        <version>${junit.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-engine</artifactId>
-        <version>5.7.0</version>
+        <version>${junit.version}</version>
       </dependency>
-        <dependency>
+      <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
-        <version>5.10.1</version>
+        <version>${junit.version}</version>
       </dependency>
 
       <dependency>
