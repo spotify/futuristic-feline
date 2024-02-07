@@ -1,5 +1,8 @@
 # futuristic-feline
 
+![Build status](https://github.com/spotify/futuristic-feline/actions/workflows/maven.yml/badge.svg)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.spotify/futuristic-feline/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.spotify/futuristic-feline)
+
 ![](images/future-is-ours.jpg)
 
 futuristic-feline is a library for detecting blocking Java futures at runtime. It is inspired by the excellent [BlockHound](https://github.com/reactor/BlockHound).
@@ -31,14 +34,6 @@ To get started, add a dependency on:
       <version>$VERSION</version>
     </dependency>
 ```
-
-## Build status
-
-![Build status](https://github.com/spotify/futuristic-feline/actions/workflows/maven.yml/badge.svg)
-
-## Maven central
-
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.spotify/futuristic-feline/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.spotify/futuristic-feline)
 
 ## Metrics integration
 
