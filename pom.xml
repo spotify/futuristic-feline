@@ -5,7 +5,8 @@
   <parent>
     <groupId>com.spotify</groupId>
     <artifactId>foss-root</artifactId>
-    <version>16</version>
+    <version>17</version>
+    <relativePath/>
   </parent>
 
   <artifactId>futuristic-feline-parent</artifactId>
@@ -71,24 +72,6 @@
             <id>analyze</id>
             <goals>
               <goal>analyze-only</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <show>private</show>
-          <failOnError>false</failOnError>
-        </configuration>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
             </goals>
           </execution>
         </executions>
