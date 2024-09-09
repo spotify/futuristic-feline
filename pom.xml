@@ -29,7 +29,7 @@
     <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
     <!-- dependencies -->
     <byte-buddy.version>1.14.15</byte-buddy.version>
-    <junit.version>5.10.2</junit.version>
+    <junit.version>5.11.0</junit.version>
     <semantic-metrics.version>1.2.0</semantic-metrics.version>
   </properties>
 
