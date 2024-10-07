@@ -28,7 +28,7 @@
   <properties>
     <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
     <!-- dependencies -->
-    <byte-buddy.version>1.15.1</byte-buddy.version>
+    <byte-buddy.version>1.15.3</byte-buddy.version>
     <junit.version>5.11.1</junit.version>
     <semantic-metrics.version>1.2.0</semantic-metrics.version>
   </properties>
@@ -95,7 +95,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>33.3.0-jre</version>
+        <version>33.3.1-jre</version>
       </dependency>
 
       <dependency>
@@ -123,7 +123,7 @@
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-launcher</artifactId>
-        <version>1.11.0</version>
+        <version>1.11.1</version>
       </dependency>
 
       <dependency>
