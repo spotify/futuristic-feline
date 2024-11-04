@@ -28,7 +28,7 @@
   <properties>
     <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
     <!-- dependencies -->
-    <byte-buddy.version>1.15.3</byte-buddy.version>
+    <byte-buddy.version>1.15.10</byte-buddy.version>
     <junit.version>5.11.2</junit.version>
     <semantic-metrics.version>1.2.0</semantic-metrics.version>
   </properties>
