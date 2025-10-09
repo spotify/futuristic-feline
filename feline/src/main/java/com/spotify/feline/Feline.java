@@ -214,23 +214,23 @@ public class Feline {
         .ignore(ElementMatchers.nameStartsWith("com.intellij.rt."))
 
         // instrument CompletableFuture
-        .type(ElementMatchers.is(CompletableFuture.class))
+        .type(ElementMatchers.failSafe(ElementMatchers.is(CompletableFuture.class)))
         .transform(FelineTransformer.forCompletableFuture())
         .asTerminalTransformation()
 
         // instrument all subtypes of Future, except for CompletableFuture (as the above
         // transformation is terminal)
-        .type(ElementMatchers.isSubTypeOf(Future.class))
+        .type(ElementMatchers.failSafe(ElementMatchers.isSubTypeOf(Future.class)))
         .transform(FelineTransformer.forFuture())
         .asTerminalTransformation()
 
         // Instrument allowed/disallowed methods
-        .type(allowancesTransformer)
+        .type(ElementMatchers.failSafe(allowancesTransformer))
         .transform(allowancesTransformer)
         .asTerminalTransformation()
 
         // instrument ThreadLocal
-        .type(ElementMatchers.isSubTypeOf(ThreadLocal.class))
+        .type(ElementMatchers.failSafe(ElementMatchers.isSubTypeOf(ThreadLocal.class)))
         .transform(FelineThreadLocalTransformer.forThreadLocal())
         .asTerminalTransformation()
         .installOn(instrumentation);
