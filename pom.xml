@@ -11,7 +11,7 @@
 
   <artifactId>futuristic-feline-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.1.10-SNAPSHOT</version>
+  <version>1.1.10</version>
 
   <organization>
     <name>Spotify AB</name>
@@ -22,7 +22,7 @@
     <connection>scm:git:https://github.com/spotify/futuristic-feline.git</connection>
     <developerConnection>scm:git:git@github.com:spotify/futuristic-feline.git</developerConnection>
     <url>scm:https://github.com/spotify/futuristic-feline/</url>
-    <tag>HEAD</tag>
+    <tag>v1.1.10</tag>
   </scm>
 
   <properties>
