@@ -1,37 +1,23 @@
 # How to release
 
-Add this to `~/.m2/settings.xml`:
+You need to have an account setup at [http://central.sonatype.com](http://central.sonatype.com) and have rights to
+publish to the `com.spotify` namespace. Then add this to `~/.m2/settings.xml`:
 
 ```xml
+
 <settings>
   <servers>
     <server>
-      <id>ossrh</id>
-      <username>YOUR USERNAME></username>
-      <password>YOUR PASSWORD</password>
+      <id>central</id>
+      <username>username-to-maven-central</username>
+      <password></password>
     </server>
-  </servers>
-</settings>
+
 ```
 
-and
-
-```xml
-<profiles>
-  <profile>
-    <id>ossrh</id>
-    <activation>
-      <activeByDefault>true</activeByDefault>
-    </activation>
-    <properties>
-      <gpg.executable>gpg</gpg.executable>
-      <gpg.passphrase>PASSPHRASE</gpg.passphrase>
-    </properties>
-  </profile>
-</profiles>
-```
+Release using the following commands:
 
 ```
 $ mvn release:clean release:prepare -DreleaseVersion=$NEW_VERSION
-$ mvn release:perform
+$ mvn release:perform -P release
 ```
