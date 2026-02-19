@@ -95,6 +95,12 @@ class FelineTransformer implements AgentBuilder.Transformer {
         return Collections.emptyMap();
       }
 
+      if (Thread.currentThread().isVirtual()) {
+        // Blocking on virtual threads is the intended usage pattern,
+        // so skip detection.
+        return Collections.emptyMap();
+      }
+
       if (future.isDone()) {
         // This method call is not actually blocking, so fast-exit
         // and keep state as false (i.e. do nothing)
