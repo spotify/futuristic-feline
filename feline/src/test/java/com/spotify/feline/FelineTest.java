@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -259,6 +260,29 @@ public class FelineTest {
 
     assertCalls(
         "com.google.common.util.concurrent.AbstractFuture$TrustedFuture.get(long,java.util.concurrent.TimeUnit)");
+  }
+
+  @Test
+  public void virtualThreadBlockingGetIsNotReported() throws Exception {
+    final SettableFuture<Void> future = SettableFuture.create();
+    final CountDownLatch aboutToBlock = new CountDownLatch(1);
+
+    Thread vthread =
+        Thread.startVirtualThread(
+            () -> {
+              try {
+                aboutToBlock.countDown();
+                future.get();
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+            });
+
+    aboutToBlock.await();
+    future.set(null);
+    vthread.join();
+
+    assertCalls();
   }
 
   private static void assertCalls(String... expected) {
